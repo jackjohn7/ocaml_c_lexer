@@ -92,99 +92,98 @@ let unwrap_float op = match op with
 let tokenizeString str =
 (* For speed, build in reverse and reverse list afterward *)
 let rec 
-        tokenize chars acc =
-        match chars with
+    tokenize chars acc = match chars with
         | [] -> EOF::acc
             (* Ignore whitespace *)
         | (' '::cs) -> tokenize cs acc
         | ('\t'::cs) -> tokenize cs acc
-    | ('\n'::cs) -> tokenize cs acc
-    | ('('::cs) -> tokenize cs (LPAREN::acc)
-    | (')'::cs) -> tokenize cs (RPAREN::acc)
-    | ('{'::cs) -> tokenize cs (LBRACE::acc)
-    | ('}'::cs) -> tokenize cs (RBRACE::acc)
-    | ('['::cs) -> tokenize cs (LBRACKET::acc)
-    | (']'::cs) -> tokenize cs (RBRACKET::acc)
-    | (','::cs) -> tokenize cs (COMMA::acc)
-    | (';'::cs) -> tokenize cs (SEMICOLON::acc)
-    | (':'::cs) -> tokenize cs (COLON::acc)
-    | ('='::('=')::cs) -> tokenize cs (EQ::acc)
-    | ('!'::('=')::cs) -> tokenize cs (NEQ::acc)
-    | ('!'::cs) -> tokenize cs (NOT::acc)
-    | ('='::cs) -> tokenize cs (ASSIGN::acc)
-    | ('<'::('<')::('=')::cs) -> tokenize cs (ASSIGN_BWLSHIFT::acc)
-    | ('<'::('<')::cs) -> tokenize cs (BWLSHIFT::acc)
-    | ('<'::('=')::cs) -> tokenize cs (LTE::acc)
-    | ('<'::cs) -> tokenize cs (LT::acc)
-    | ('>'::('>')::('=')::cs) -> tokenize cs (ASSIGN_BWRSHIFT::acc)
-    | ('>'::('>')::cs) -> tokenize cs (BWRSHIFT::acc)
-    | ('>'::('=')::cs) -> tokenize cs (GTE::acc)
-    | ('>'::cs) -> tokenize cs (GT::acc)
-    | ('^'::('=')::cs) -> tokenize cs (ASSIGN_BWXOR::acc)
-    | ('^'::cs) -> tokenize cs (BWXOR::acc)
-    | ('+'::('=')::cs) -> tokenize cs (ASSIGN_PLUS::acc)
-    | ('+'::('+')::cs) -> tokenize cs (INC::acc)
-    | ('+'::cs) -> tokenize cs (PLUS::acc)
-    | ('-'::('=')::cs) -> tokenize cs (ASSIGN_MINUS::acc)
-    | ('-'::('-')::cs) -> tokenize cs (DEC::acc)
-    | ('-'::cs) -> tokenize cs (MINUS::acc) (* no negatives? *)
-    (* Could later match on last acc token (Ident) and specify ptr star *)
-    | ('*'::('=')::cs) -> tokenize cs (ASSIGN_MUL::acc)
-    | ('*'::cs) -> tokenize cs (STAR::acc)
-    | ('/'::('=')::cs) -> tokenize cs (ASSIGN_DIV::acc)
-    | ('/'::cs) -> tokenize cs (DIV::acc)
-    | ('%'::('=')::cs) -> tokenize cs (ASSIGN_MOD::acc)
-    | ('%'::cs) -> tokenize cs (MOD::acc)
-    | ('~'::cs) -> tokenize cs (BWOCOMP::acc)
-    | ('#'::cs) -> tokenize cs (POUND::acc)
-    | ('&'::('&')::cs) -> tokenize cs (AND::acc)
-    | ('&'::('=')::cs) -> tokenize cs (ASSIGN_BWAND::acc)
-    | ('&'::cs) -> tokenize cs (BWAND::acc)
-    | ('|'::('|')::cs) -> tokenize cs (OR::acc)
-    | ('|'::('=')::cs) -> tokenize cs (ASSIGN_BWOR::acc)
-    | ('|'::cs) -> tokenize cs (BWOR::acc)
-    | (('s')::('i')::('z')::('e')::('o')::('f')::cs) ->
-        tokenize cs (SIZEOF::acc)
-    (* Keywords *)
-    | (('r')::('e')::('t')::('u')::('r')::('n')::cs) ->
-        tokenize cs (RETURN::acc)
-    | (('u')::('n')::('i')::('o')::('n')::cs) ->
-        tokenize cs (UNION::acc)
-    | (('t')::('y')::('p')::('e')::('d')::('e')::('f')::cs) ->
-        tokenize cs (TYPEDEF::acc)
-    | (('u')::('n')::('s')::('i')::('g')::('n')::('e')::('d')::cs) ->
-        tokenize cs (TYPEDEF::acc)
-    | (('i')::('n')::('t')::(' '|'\t')::cs) ->
-        tokenize cs (INTTYPE::acc)
-    | (('f')::('l')::('o')::('a')::('t')::cs) ->
-        tokenize cs (FLOATTYPE::acc)
-    | (('c')::('h')::('a')::('r')::cs) ->
-        tokenize cs (CHARTYPE::acc)
-    | (('s')::('t')::('r')::('u')::('c')::('t')::cs) ->
-        tokenize cs (STRUCTTYPE::acc)
-    | (('e')::('n')::('u')::('m')::cs) ->
-        tokenize cs (ENUMTYPE::acc)
-    | (('c')::('o')::('n')::('s')::('t')::cs) ->
-        tokenize cs (CONST::acc)
-    | (('f')::('o')::('r')::cs) ->
-        tokenize cs (FOR::acc)
-    | (('w')::('h')::('i')::('l')::('e')::cs) ->
-        tokenize cs (WHILE::acc)
-    | (('d')::('o')::cs) ->
-        tokenize cs (DO::acc)
-    (* literals and idents *)
-    | (('\'')::c::('\'')::cs) -> tokenize cs ((CHAR c)::acc)
-    | (('\"')::cs) -> read_string cs acc []
-    | (('0')::('x')::cs) -> read_hex cs acc []
-    | (('0')::('b')::cs) -> read_bin cs acc []
-        | (('0')::cs) -> read_oct cs acc ['0'; 'o' ; '0']
-    | c::cs ->
-      if ((Char.code c) >= 65 && (Char.code c) <= 90) ||
-      ((Char.code c) >= 97 && (Char.code c) <= 122) then
-        read_ident cs acc [c]
-      else if ((Char.code c) >= 48 && (Char.code c) <= 57) then
-        read_number  cs acc [c]
-      else tokenize cs acc
+        | ('\n'::cs) -> tokenize cs acc
+        | ('('::cs) -> tokenize cs (LPAREN::acc)
+        | (')'::cs) -> tokenize cs (RPAREN::acc)
+        | ('{'::cs) -> tokenize cs (LBRACE::acc)
+        | ('}'::cs) -> tokenize cs (RBRACE::acc)
+        | ('['::cs) -> tokenize cs (LBRACKET::acc)
+        | (']'::cs) -> tokenize cs (RBRACKET::acc)
+        | (','::cs) -> tokenize cs (COMMA::acc)
+        | (';'::cs) -> tokenize cs (SEMICOLON::acc)
+        | (':'::cs) -> tokenize cs (COLON::acc)
+        | ('='::('=')::cs) -> tokenize cs (EQ::acc)
+        | ('!'::('=')::cs) -> tokenize cs (NEQ::acc)
+        | ('!'::cs) -> tokenize cs (NOT::acc)
+        | ('='::cs) -> tokenize cs (ASSIGN::acc)
+        | ('<'::('<')::('=')::cs) -> tokenize cs (ASSIGN_BWLSHIFT::acc)
+        | ('<'::('<')::cs) -> tokenize cs (BWLSHIFT::acc)
+        | ('<'::('=')::cs) -> tokenize cs (LTE::acc)
+        | ('<'::cs) -> tokenize cs (LT::acc)
+        | ('>'::('>')::('=')::cs) -> tokenize cs (ASSIGN_BWRSHIFT::acc)
+        | ('>'::('>')::cs) -> tokenize cs (BWRSHIFT::acc)
+        | ('>'::('=')::cs) -> tokenize cs (GTE::acc)
+        | ('>'::cs) -> tokenize cs (GT::acc)
+        | ('^'::('=')::cs) -> tokenize cs (ASSIGN_BWXOR::acc)
+        | ('^'::cs) -> tokenize cs (BWXOR::acc)
+        | ('+'::('=')::cs) -> tokenize cs (ASSIGN_PLUS::acc)
+        | ('+'::('+')::cs) -> tokenize cs (INC::acc)
+        | ('+'::cs) -> tokenize cs (PLUS::acc)
+        | ('-'::('=')::cs) -> tokenize cs (ASSIGN_MINUS::acc)
+        | ('-'::('-')::cs) -> tokenize cs (DEC::acc)
+        | ('-'::cs) -> tokenize cs (MINUS::acc) (* no negatives? *)
+        (* Could later match on last acc token (Ident) and specify ptr star *)
+        | ('*'::('=')::cs) -> tokenize cs (ASSIGN_MUL::acc)
+        | ('*'::cs) -> tokenize cs (STAR::acc)
+        | ('/'::('=')::cs) -> tokenize cs (ASSIGN_DIV::acc)
+        | ('/'::cs) -> tokenize cs (DIV::acc)
+        | ('%'::('=')::cs) -> tokenize cs (ASSIGN_MOD::acc)
+        | ('%'::cs) -> tokenize cs (MOD::acc)
+        | ('~'::cs) -> tokenize cs (BWOCOMP::acc)
+        | ('#'::cs) -> tokenize cs (POUND::acc)
+        | ('&'::('&')::cs) -> tokenize cs (AND::acc)
+        | ('&'::('=')::cs) -> tokenize cs (ASSIGN_BWAND::acc)
+        | ('&'::cs) -> tokenize cs (BWAND::acc)
+        | ('|'::('|')::cs) -> tokenize cs (OR::acc)
+        | ('|'::('=')::cs) -> tokenize cs (ASSIGN_BWOR::acc)
+        | ('|'::cs) -> tokenize cs (BWOR::acc)
+        | (('s')::('i')::('z')::('e')::('o')::('f')::cs) ->
+            tokenize cs (SIZEOF::acc)
+        (* Keywords *)
+        | (('r')::('e')::('t')::('u')::('r')::('n')::cs) ->
+            tokenize cs (RETURN::acc)
+        | (('u')::('n')::('i')::('o')::('n')::cs) ->
+            tokenize cs (UNION::acc)
+        | (('t')::('y')::('p')::('e')::('d')::('e')::('f')::cs) ->
+            tokenize cs (TYPEDEF::acc)
+        | (('u')::('n')::('s')::('i')::('g')::('n')::('e')::('d')::cs) ->
+            tokenize cs (TYPEDEF::acc)
+        | (('i')::('n')::('t')::(' '|'\t')::cs) ->
+            tokenize cs (INTTYPE::acc)
+        | (('f')::('l')::('o')::('a')::('t')::cs) ->
+            tokenize cs (FLOATTYPE::acc)
+        | (('c')::('h')::('a')::('r')::cs) ->
+            tokenize cs (CHARTYPE::acc)
+        | (('s')::('t')::('r')::('u')::('c')::('t')::cs) ->
+            tokenize cs (STRUCTTYPE::acc)
+        | (('e')::('n')::('u')::('m')::cs) ->
+            tokenize cs (ENUMTYPE::acc)
+        | (('c')::('o')::('n')::('s')::('t')::cs) ->
+            tokenize cs (CONST::acc)
+        | (('f')::('o')::('r')::cs) ->
+            tokenize cs (FOR::acc)
+        | (('w')::('h')::('i')::('l')::('e')::cs) ->
+            tokenize cs (WHILE::acc)
+        | (('d')::('o')::cs) ->
+            tokenize cs (DO::acc)
+        (* literals and idents *)
+        | (('\'')::c::('\'')::cs) -> tokenize cs ((CHAR c)::acc)
+        | (('\"')::cs) -> read_string cs acc []
+        | (('0')::('x')::cs) -> read_hex cs acc []
+        | (('0')::('b')::cs) -> read_bin cs acc []
+            | (('0')::cs) -> read_oct cs acc ['0'; 'o' ; '0']
+        | c::cs ->
+          if ((Char.code c) >= 65 && (Char.code c) <= 90) ||
+          ((Char.code c) >= 97 && (Char.code c) <= 122) then
+            read_ident cs acc [c]
+          else if ((Char.code c) >= 48 && (Char.code c) <= 57) then
+            read_number  cs acc [c]
+          else tokenize cs acc
   and
     (* Read float chars to float *)
     read_float cs acc str_acc = match cs with
