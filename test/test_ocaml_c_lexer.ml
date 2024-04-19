@@ -2,9 +2,11 @@ open Ocaml_c_lexer.Lexer
 open Ocaml_c_lexer.Cli
 type test_case = { file_name: string; expected: token list; }
 
+let _ = print_endline (Sys.getcwd());;
+
 let test_cases = [
         {
-                file_name = "../examples/hello_world.c";
+                file_name = "../../../examples/hello_world.c";
                 expected = [
                         POUND;
                         IDENT "include";
@@ -22,7 +24,7 @@ let test_cases = [
                         RPAREN;
                         SEMICOLON;
                         RETURN;
-                        INT(0);
+                        INT 0;
                         SEMICOLON;
                         RBRACE;
                         EOF;
@@ -52,8 +54,12 @@ let rec run_tests cases = match cases with
                 match (compare t.expected (t.file_name |> read_file |> tokenizeString)) with
                                 | true -> run_tests ts
                 | x -> (print_endline "FAILED";
+                        print_endline "File: ";
+                        print_endline (t.file_name |> read_file);
+                        print_endline "Expected: ";
                         pp_list t.expected;
                         print_endline "";
+                        print_endline "Got: ";
                         pp_list (t.file_name |> read_file |> tokenizeString);
                         x);;
 
