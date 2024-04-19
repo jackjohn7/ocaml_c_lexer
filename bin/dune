@@ -1,0 +1,4 @@
+(executable
+ (public_name ocaml_c_lexer)
+ (name main)
+ (libraries ocaml_c_lexer))
